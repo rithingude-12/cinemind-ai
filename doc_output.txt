@@ -1,0 +1,1113 @@
+
+Build a PRODUCTION-GRADE backend for CineMind AI using FastAPI with a clean, scalable, high-performance architecture.
+This backend must deliver 10/10 peak mapping and ultra-accurate recommendations with STRICT era + genre alignment, ZERO leakage, and INTELLIGENT scoring precision.
+
+🔥 CORE STACK
+FastAPI (Python)
+Pydantic (validation)
+SQLAlchemy (ORM)
+SQLite (dev) → PostgreSQL-ready (prod)
+Uvicorn (server)
+Pandas (dataset processing)
+Scikit-learn (similarity / vectorization)
+NumPy (vector math optimization)
+JWT Authentication
+
+🔥 PROJECT STRUCTURE (MANDATORY)
+backend/│├── app/│ ├── main.py│ ├── core/│ │ ├── config.py│ │ ├── security.py│ │ └── dependencies.py│ ││ ├── models/│ │ ├── user.py│ │ ├── movie.py│ │ ├── rating.py│ │ └── watchlist.py│ ││ ├── schemas/│ │ ├── user.py│ │ ├── movie.py│ │ ├── recommend.py│ │ └── auth.py│ ││ ├── api/│ │ ├── auth.py│ │ ├── recommend.py│ │ ├── watchlist.py│ │ ├── rating.py│ │ └── insights.py│ ││ ├── services/│ │ ├── orchestrator.py│ │ ├── recommendation_engine.py│ │ ├── similarity_engine.py│ │ ├── filter_engine.py│ │ ├── genre_mapper.py│ │ ├── era_mapper.py│ │ └── explanation_engine.py│ ││ ├── db/│ │ ├── base.py│ │ ├── session.py│ │ └── init_db.py│ ││ └── utils/│ ├── logger.py│ └── validators.py│├── dataset/│ └── movies.csv│├── requirements.txt└── .env
+
+🔥 DATABASE DESIGN (OPTIMIZED FOR PRECISION)
+Users:
+id
+email
+password_hash
+preferred_language
+preferred_era
+created_at
+Movies:
+id
+title
+genres (JSON array — normalized)
+primary_genre (single dominant genre)
+language (normalized)
+year
+era (precomputed for fast filtering)
+rating
+popularity
+overview
+keywords (processed tokens)
+poster_url
+Ratings:
+id
+user_id
+movie_id
+rating
+Watchlist:
+id
+user_id
+movie_id
+
+🔥 AUTH SYSTEM (JWT)
+Endpoints:
+POST /api/v1/auth/registerPOST /api/v1/auth/login
+Features:
+bcrypt hashing
+access + refresh tokens
+protected routes via dependency injection
+
+🔥 CENTRAL BRAIN — ORCHESTRATOR (PRECISION CORE)
+Create:
+RecommendationOrchestrator
+Responsibilities:
+Accept request:{user_id,language,era,mode,mood,energy,questionnaire,manual_movies}
+HARD VALIDATION:
+language MUST exist in dataset
+era MUST be valid enum
+mode MUST be valid
+Reject invalid inputs immediately.
+STRICT PIPELINE ORDER:
+STEP 1 → Normalize inputSTEP 2 → Apply HARD FILTERS (language + era)STEP 3 → Apply MODE LOGICSTEP 4 → Apply GENRE PRIORITY MAPPINGSTEP 5 → Score candidatesSTEP 6 → Rank + diversifySTEP 7 → Generate explanations
+Return:
+{movies: [],explanations: [],confidence_score: float}
+
+🔥 FILTER ENGINE (ABSOLUTE STRICTNESS)
+language EXACT match (case-normalized)
+era EXACT match (precomputed column)
+Era mapping:
+early: 2001–2010mid: 2011–2016genz: ≥ 2017
+NO fallbackNO cross-era blendingNO language leakage
+If filtered dataset < threshold → return best within same constraints ONLY
+
+🔥 GENRE MAPPING ENGINE (CRITICAL FOR 10/10 ACCURACY)
+Normalize all genres (lowercase, trimmed)
+Map synonyms:
+"romcom" → "romance""sci-fi" → "science fiction""thriller" → "suspense"
+Assign weights:
+primary genre → 1.0secondary genres → 0.7
+Ensure STRICT genre alignment:
+If user selects genre → results MUST strongly match it
+
+🔥 RECOMMENDATION ENGINE (HIGH-PRECISION SCORING)
+score =
+0.40 * content_similarity +0.30 * genre_match_score +0.10 * mood_alignment +0.05 * energy_alignment +0.10 * popularity_score +0.05 * diversity_penalty
+Key rules:
+genre_match_score MUST dominate ranking
+penalize weak genre matches heavily
+boost exact genre matches
+
+🔥 SIMILARITY ENGINE (ENHANCED)
+TF-IDF on overview + keywords
+cosine similarity
+keyword extraction using n-grams
+remove stopwords
+normalize vectors
+Manual mode:
+average vector of selected movies
+compute similarity against filtered dataset
+
+🔥 MODE LOGIC (STRICT ISOLATION)
+Mood Mode:
+uses mood + energy ONLY
+maps mood → genre bias internally
+ignores questionnaire
+Questionnaire Mode:
+uses selected genres ONLY
+assigns strong genre weights
+ignores sliders
+Manual Mode:
+uses selected movies ONLY
+builds similarity vector
+ignores mood + questionnaire
+NO CROSS-INFLUENCE
+
+🔥 RANKING + DIVERSITY CONTROL
+sort by score descending
+apply diversity penalty:
+avoid same franchise / duplicatesavoid identical genre repetition beyond threshold
+
+🔥 EXPLANATION ENGINE (SMART + ACCURATE)
+Generate explanation using:
+matched genre
+matched era
+matched language
+similarity reasoning
+Example:
+"This recommendation strongly matches your preference for {genre} films from the {era} era in {language}, with similar themes and storytelling patterns."
+
+🔥 WATCHLIST SYSTEM
+GET /watchlistPOST /watchlist/addDELETE /watchlist/remove
+
+🔥 RATING SYSTEM
+POST /rating
+updates user preference weights
+influences future recommendations
+
+🔥 INSIGHTS ENGINE
+User Insights:
+dominant genres
+average rating behavior
+preferred era trends
+Global Insights:
+genre popularity
+language distribution
+
+🔥 DATASET LOADER (CRITICAL FOR ACCURACY)
+load movies.csv using pandas
+normalize:
+genres → lowercase + mapped
+language → standardized
+compute era column
+extract keywords from overview
+remove duplicates
+validate missing fields
+
+🔥 ERROR HANDLING
+never crash
+always return structured response
+if no results → return closest valid matches WITH explanation
+
+🔥 PERFORMANCE OPTIMIZATION
+cache dataset in memory
+precompute TF-IDF matrix
+precompute genre vectors
+minimize DB queries
+use efficient filtering before scoring
+
+🔥 FINAL REQUIREMENTS (NON-NEGOTIABLE)
+System MUST:
+NEVER return wrong language
+NEVER return wrong era
+ALWAYS prioritize correct genre
+ALWAYS return meaningful results
+ALWAYS generate explanation
+maintain strict mode isolation
+deliver consistent, repeatable outputs
+
+🔥 GOAL
+This backend must behave like a HIGH-PRECISION recommendation engine:
+strict filtering
+intelligent mapping
+accurate scoring
+stable performance
+Deliver 10/10 peak mapping and recommendation accuracy.
+Build everything end-to-end.
+Build a HIGH-PRECISION DATASET + MODEL LAYER for CineMind AI that supports 35,000+ movies with PERFECT mapping, STRICT filtering, and INTELLIGENT recommendations.
+This is NOT a basic dataset loader. This is the CORE INTELLIGENCE SYSTEM.
+
+🔥 PART 1 — DATASET DESIGN (SCALABLE + CLEAN)
+You will use a dataset of ~35,000 movies.
+Each movie MUST follow this schema:
+{id: int,title: string,genres: [string],primary_genre: string,language: "telugu" | "tamil" | "hindi" | "english",original_language_code: "te" | "ta" | "hi" | "en",year: int,era: "early" | "mid" | "genz",rating: float,popularity: float,overview: string,keywords: [string],poster_url: string}
+
+🔥 PART 2 — DATA SOURCE (MANDATORY)
+Use combination:
+TMDB dataset (movies_metadata)
+credits dataset (for keywords + cast)
+external enrichment if needed
+Poster:
+All movie posters are already included in the dataset in .jpeg format.
+Use the local poster file path directly instead of constructing URLs.
+poster_url = local_dataset_path + "/posters/" + movie_id + ".jpeg"
+
+🔥 PART 3 — DATA CLEANING PIPELINE
+Perform:
+remove duplicates (by title + year)
+drop movies without:
+genres
+language
+year
+overview
+normalize:genres → lowercaselanguage → mappedremove noise text
+
+🔥 PART 4 — LANGUAGE NORMALIZATION
+Map ALL:
+te → teluguta → tamilhi → hindien → english
+REMOVE all other languages
+FINAL DATASET must ONLY contain:
+telugu
+tamil
+hindi
+english
+
+🔥 PART 5 — ERA MAPPING (PRECOMPUTE)
+Compute once:
+if 2001–2010 → earlyif 2011–2016 → midif ≥2017 → genz
+Store in dataset.
+
+🔥 PART 6 — GENRE ENGINE (CRITICAL)
+Normalize genres:
+lowercase
+trim spaces
+Map synonyms:
+"sci-fi" → "science fiction""romcom" → "romance""action-adventure" → "action"
+Create:
+primary_genre = most dominant genre
+
+🔥 PART 7 — KEYWORD EXTRACTION (IMPORTANT)
+From overview:
+remove stopwords
+apply n-grams
+extract top keywords
+Store in:
+keywords: [string]
+
+🔥 PART 8 — TEXT VECTORIZATION (CORE INTELLIGENCE)
+Use:
+TF-IDF Vectorizer on:
+overview + keywords + genres
+Steps:
+build corpus
+fit TF-IDF
+generate matrix (movies x features)
+Store:
+tfidf_matrix
+
+🔥 PART 9 — SIMILARITY ENGINE
+Use:
+cosine_similarity(tfidf_matrix)
+For manual mode:
+combine vectors of selected movies
+compute similarity vs all filtered movies
+
+🔥 PART 10 — MOOD MAPPING ENGINE (ADVANCED)
+Define:
+MOOD → GENRE WEIGHTS
+dark:
+thriller (1.0)
+crime (0.9)
+horror (0.9)
+happy:
+comedy (1.0)
+romance (0.9)
+family (0.8)
+balanced:
+drama (0.7)
+adventure (0.7)
+
+🔥 PART 11 — ENERGY MAPPING
+low:
+drama
+emotional
+high:
+action
+adventure
+war
+
+🔥 PART 12 — FINAL FEATURE VECTOR
+Each movie vector must combine:
+TF-IDF vector
+genre vector
+mood affinity
+energy affinity
+popularity score
+
+🔥 PART 13 — STRICT FILTERING (BEFORE MODEL)
+Apply FIRST:
+movies = movies.filter(language == input.language &&era == input.era)
+NO EXCEPTIONSNO FALLBACK
+
+🔥 PART 14 — SCORING MODEL (PEAK)
+final_score =
+0.35 * cosine_similarity +0.30 * genre_alignment +0.15 * mood_alignment +0.10 * energy_alignment +0.05 * popularity +0.05 * diversity_penalty
+
+🔥 PART 15 — DIVERSITY CONTROL
+avoid repeating same primary_genre > 3 times
+inject variation without breaking relevance
+
+🔥 PART 16 — EXPLANATION DATA PREP
+Store:
+matched genres
+similarity score
+mood match
+Use for explanation generation.
+
+🔥 PART 17 — PERFORMANCE OPTIMIZATION
+precompute TF-IDF matrix once
+cache in memory
+use sparse matrix operations
+avoid recomputation
+
+🔥 PART 18 — VALIDATION SYSTEM
+Before returning results:
+ASSERT:
+all movies match language
+all movies match era
+no empty results
+no duplicate titles
+
+🔥 PART 19 — DATASET SIZE HANDLING
+optimize for 35k movies
+ensure <200ms query time
+pre-filter reduces search space
+
+🔥 FINAL GOAL
+This model must:
+deliver HIGHLY RELEVANT results
+feel intelligent, not random
+strictly respect user constraints
+adapt to mood, genre, and similarity
+support all 3 modes perfectly
+
+🔥 OUTPUT
+System must behave like:
+Netflix-level recommendation engine
+deterministic + explainable + consistent
+
+Build this dataset + model layer as the CORE of CineMind AI intelligence.
+Build a COMPLETE, PRODUCTION-GRADE AUTHENTICATION + DATABASE SYSTEM for CineMind AI using FastAPI.
+This system must be:
+secure
+scalable
+fully functional
+production-ready
+zero bugs
+zero inconsistencies
+
+🔥 CORE STACK
+FastAPI
+SQLAlchemy (ORM)
+SQLite (dev) → PostgreSQL-ready (prod)
+Alembic (migrations)
+Pydantic
+Passlib (bcrypt hashing)
+python-jose (JWT)
+Redis (optional for token blacklist)
+
+🔥 PROJECT STRUCTURE (AUTH + DB FOCUSED)
+backend/│├── app/│ ├── main.py│ ├── core/│ │ ├── config.py│ │ ├── security.py│ │ ├── auth.py│ │ └── dependencies.py│ ││ ├── db/│ │ ├── base.py│ │ ├── session.py│ │ └── init_db.py│ ││ ├── models/│ │ ├── user.py│ │ ├── session.py│ │ ├── rating.py│ │ └── watchlist.py│ ││ ├── schemas/│ │ ├── user.py│ │ ├── auth.py│ │ └── token.py│ ││ ├── api/│ │ ├── auth.py│ │ ├── user.py│ │ └── session.py│ ││ └── utils/│ ├── validators.py│ └── logger.py│├── alembic/├── requirements.txt└── .env
+
+🔥 DATABASE DESIGN (STRICT + CLEAN)
+Users:
+id (PK)
+email (unique, indexed)
+password_hash
+is_active
+preferred_language
+preferred_era
+created_at
+updated_at
+Sessions (IMPORTANT):
+id
+user_id
+refresh_token
+device_info
+ip_address
+created_at
+expires_at
+Ratings:
+id
+user_id
+movie_id
+rating
+Watchlist:
+id
+user_id
+movie_id
+
+🔥 SECURITY SYSTEM (CRITICAL)
+Use:
+bcrypt hashing
+JWT access tokens (short-lived)
+refresh tokens (long-lived)
+Access Token:
+expires in 15 minutes
+Refresh Token:
+expires in 7 days
+
+🔥 AUTH FLOW (FULLY FUNCTIONAL)
+
+STEP 1 — REGISTER
+POST /api/v1/auth/register
+Input:
+{email,password}
+Process:
+validate email format
+validate password strength
+hash password
+store user
+Return:
+{message: "User created successfully"}
+
+STEP 2 — LOGIN
+POST /api/v1/auth/login
+Input:
+{email,password}
+Process:
+verify user
+check password
+generate access token
+generate refresh token
+store session in DB
+Return:
+{access_token,refresh_token,user}
+
+STEP 3 — REFRESH TOKEN
+POST /api/v1/auth/refresh
+Input:
+{refresh_token}
+Process:
+validate token
+check session exists
+issue new access token
+
+STEP 4 — LOGOUT
+POST /api/v1/auth/logout
+Process:
+delete session
+invalidate refresh token
+
+🔥 TOKEN SECURITY
+store access token in frontend (temporary)
+validate token on every protected route
+deny access if invalid
+
+🔥 DEPENDENCY SYSTEM
+Create:
+get_current_user()
+decode JWT
+fetch user from DB
+attach user to request
+Use on ALL protected endpoints
+
+🔥 USER ENDPOINTS
+GET /api/v1/user/me
+Return:
+user info
+preferences
+
+🔥 VALIDATION RULES (STRICT)
+email must be unique
+password min length: 8
+reject invalid inputs
+return clear errors
+
+🔥 ERROR HANDLING
+no crashes
+structured JSON errors
+proper HTTP status codes
+
+🔥 DATABASE INIT
+auto-create tables
+seed optional test user
+
+🔥 MIGRATIONS
+Use Alembic:
+create initial migration
+allow schema updates safely
+
+🔥 PERFORMANCE
+indexed email lookup
+minimal DB queries
+efficient session validation
+
+🔥 OPTIONAL (ADVANCED — PEAK)
+Add:
+Redis for token blacklist
+device tracking
+multiple sessions per user
+logout all devices
+
+🔥 FINAL REQUIREMENTS
+System MUST:
+handle register/login flawlessly
+never expose password
+maintain session integrity
+support multiple users
+scale to production
+integrate cleanly with recommendation system
+
+🔥 GOAL
+This auth + database system must feel like:
+real SaaS-level backend
+secure
+stable
+reliable
+NO bugsNO broken flows
+Build everything end-to-end.
+Build the COMPLETE FRONTEND for CineMind AI with Apple + Netflix level UI/UX using Next.js 14/15 (App Router), TypeScript, Tailwind CSS, and Framer Motion.
+This must be a REAL PRODUCT UI — not a project.
+
+🔥 CORE PRINCIPLES (NON-NEGOTIABLE)
+ultra clean spacing
+minimal premium design (black/white/grey)
+smooth 60fps animations
+zero clutter
+no broken layouts
+perfect responsiveness
+lightning-fast perceived performance
+
+🔥 GLOBAL DESIGN SYSTEM
+Colors:
+background: #000000
+cards: #111111
+text: #FFFFFF
+secondary text: #9CA3AF
+accent: subtle gradient (white → gray)
+
+Spacing System:
+container: max-w-[1400px] mx-auto px-6
+section gap: space-y-16
+card gap: gap-5
+padding: consistent everywhere
+NO text touching edgesNO uneven spacing
+
+Typography:
+clean modern font (Inter / SF Pro)
+hierarchy:
+title → text-4xl / text-5xlsection title → text-2xlbody → text-sm / text-base
+
+🔥 GLOBAL LAYOUT
+/app/layout.tsx
+includes Navbar
+includes AuthProvider
+background black
+smooth page transitions
+
+🔐 AUTH FLOW (PREMIUM)
+
+LOGIN / REGISTER PAGE
+Routes:
+/auth/login/auth/register
+Design:
+centered glass card
+rounded-2xl
+soft shadow
+subtle blur background
+Fields:
+email
+password
+Buttons:
+large rounded-full
+hover scale (1.05)
+smooth transition
+
+Validation:
+real email format
+error messages clean
+
+After login:
+→ redirect to onboarding
+
+🌍 ONBOARDING FLOW (STEP SYSTEM)
+
+STEP 1 — LANGUAGE
+UI:
+4 cards:Telugu / Tamil / Hindi / English
+Design:
+hover glow
+selected state highlight
+grid layout
+
+STEP 2 — ERA
+Cards:
+Early
+Mid
+Gen-Z
+
+STEP 3 — MODE
+3 premium cards:
+Questionnaire
+Mood Scroller
+Manual Search
+Each:
+icon
+title
+description
+hover animation
+
+Transitions:
+smooth slide/fade
+progress indicator (Step 1/3)
+
+🎬 HOME / RECOMMENDATION PAGE (CORE)
+
+🔥 HERO SECTION (MAIN RECOMMENDATION)
+This must feel ALIVE — not static.
+Layout:
+LEFT:
+Title (large bold)
+Genres (pill style)
+Rating ⭐
+Year + Language
+2-line synopsis (ellipsis)
+AI explanation (important)
+Buttons:
+▶ Watch Trailer
+⭐ Rate
+➕ Watchlist
+
+RIGHT:
+Poster (STRICT FIT)
+Rules:
+aspect ratio 2:3
+object-fit: cover
+rounded-xl
+shadow-lg
+NO stretching
+
+Animation:
+fade-in
+slight zoom background
+
+🔥 MOOD SCROLLER
+2 sliders (Mood + Energy)
+gradient track
+glowing knob
+smooth physics
+
+Moodometer:
+“Dark • Intense • Fast”
+updates LIVE
+
+🔥 MOVIE ROWS (NETFLIX STYLE)
+
+Row 1:
+“More Recommendations For You”
+→ exactly 7 movies
+
+Each card:
+poster (perfect fit)
+title
+rating ⭐
+genre
+
+Card Design:
+width: 180px
+height: 270px
+rounded-xl
+shadow
+hover:
+scale 1.05
+slight lift
+
+Scrolling:
+horizontal
+smooth
+no scrollbar visible
+
+🔥 SEE MORE PAGE
+Route:
+/recommend/more
+grid layout
+10–20 movies
+infinite scroll or load more
+
+⭐ WATCHLIST
+
+Route:
+/watchlist
+grid of saved movies
+remove option
+rate option
+
+⭐ RATING SYSTEM
+
+Modal:
+centered popup
+1–10 rating or star system
+smooth animations
+
+📊 INSIGHTS PAGE
+
+Route:
+/insights
+Sections:
+User Insights
+Global Insights
+
+Charts (Recharts):
+bar chart (genres)
+pie chart (distribution)
+line chart (trends)
+
+Live updates:
+after rating
+after watching
+
+🧭 NAVBAR (PREMIUM)
+
+Left:
+CineMind AI logo
+Right:
+Home
+Watchlist
+Insights
+Profile
+Logout
+
+Features:
+sticky
+blur background
+active route highlight
+mobile hamburger
+
+👤 PROFILE (BONUS — PREMIUM TOUCH)
+
+Route:
+/profile
+email
+preferences
+theme switch
+
+🎨 UI INTERACTIONS (IMPORTANT)
+
+Buttons:
+rounded-full
+hover scale
+subtle glow
+
+Cards:
+hover lift
+shadow deepen
+
+Page:
+smooth transitions
+no flicker
+
+⚡ PERFORMANCE
+
+lazy load images
+skeleton loaders
+debounce API calls
+no re-render spam
+
+🔐 SECURITY
+
+protect routes
+logout clears session
+no data leaks
+
+🚀 FINAL EXPERIENCE
+User opens app →
+smooth login
+guided onboarding
+cinematic home
+responsive recommendations
+live insights
+
+User feels:
+“I’m controlling my movie experience”
+
+🔥 FINAL GOAL
+This must feel like:
+Apple-level polish
+Netflix-level experience
+AI-powered intelligence
+
+NOT:
+project UI
+basic app
+cluttered system
+
+Build everything end-to-end with clean architecture and perfect UI behavior.
+Take full control of CineMind AI and COMPLETE the system to TRUE PRODUCTION PEAK level.
+You are now responsible for:
+fixing all inconsistencies
+synchronizing all layers
+ensuring perfect user experience
+making the system feel intelligent and alive
+
+🔥 PART 1 — GLOBAL STATE SYSTEM
+Create a centralized state using Zustand:
+Store:
+user
+token
+language
+era
+mode
+mood
+energy
+recommendations
+watchlist
+Ensure:
+single source of truth
+sync across all pages
+
+🔥 PART 2 — STRICT API CONTRACT
+Define ONE standard request format:
+{user_id,language,era,mode,mood,energy,questionnaire,manual_movies}
+Frontend MUST always send complete state.
+Backend MUST validate strictly.
+Reject incomplete requests.
+
+🔥 PART 3 — RESPONSE CONSISTENCY
+Ensure:
+same input → stable output
+avoid random reshuffling
+Implement:
+caching last results per user
+slight variation only
+
+🔥 PART 4 — EMPTY STATE HANDLING
+If no results:
+show curated fallback
+explain why
+If loading:
+show skeleton UI
+If error:
+retry automatically once
+show fallback
+
+🔥 PART 5 — EXPERIENCE CONTINUITY
+When recommendations update:
+smooth fade transition
+no hard switch
+preserve layout
+
+🔥 PART 6 — ANTI-REPETITION SYSTEM
+Track last shown movies:
+avoid showing same movies repeatedly
+rotate results intelligently
+
+🔥 PART 7 — REAL ANTIGRAVITY QA
+Simulate:
+100 users
+all modes
+all languages
+all eras
+Test:
+flow correctness
+UI rendering
+API responses
+performance
+Fix ALL failures automatically.
+
+🔥 PART 8 — LOGGING SYSTEM
+Implement:
+request logs
+error logs
+recommendation logs
+
+🔥 PART 9 — FAILSAFE SYSTEM
+If backend fails:
+fallback to cached data
+never show empty UI
+
+🔥 PART 10 — FINAL POLISH
+Ensure:
+consistent spacing everywhere
+no layout shifts
+no flicker
+smooth animations
+fast load
+
+🔥 FINAL GOAL
+System must feel like:
+one unified intelligent product
+not separate features
+Everything must:
+work together
+stay in sync
+never break
+
+If ANY issue exists:
+FIX IT automatically.
+Do not stop until system is flawless.
+Upgrade CineMind AI to FINAL PEAK EXPERIENCE level.
+Focus on making the system feel ALIVE, INTELLIGENT, and PREMIUM.
+
+🔥 Add Personalization Memory:
+track user behavior
+build taste profile
+influence recommendations
+
+🔥 Add Session Awareness:
+avoid repeating movies
+evolve recommendations gradually
+
+🔥 Add Perceived Speed:
+preload data
+optimistic UI
+instant transitions
+
+🔥 Add Micro-interactions:
+hover tilt
+smooth scaling
+cursor glow
+spring animations
+
+🔥 Upgrade Explanation:
+dynamic, contextual reasoning
+based on real behavior
+
+🔥 Add Confidence Score UI:
+show match percentage
+visual indicator
+
+🔥 Add Error Invisibility:
+silent retries
+fallback data
+no user-facing errors
+
+🔥 Improve Visual Hierarchy:
+hero dominance
+clean separation
+better spacing
+
+🔥 Add WOW Element:
+cinematic transitions
+engaging animations
+emotional UI touch
+
+🔥 FINAL GOAL:
+User must feel:
+“I am interacting with a smart cinematic system that understands me.”
+
+Do not stop until experience feels premium, smooth, and intelligent.
+Take FULL CONTROL of CineMind AI as a REAL-WORLD QA ENGINE.
+You are now:
+QA Engineer
+End-user simulator
+Bug detector
+Auto-fixer
+Performance auditor
+Your job is to TEST, BREAK, FIX, and VALIDATE the entire system until it behaves like a real production product.
+
+🔥 PHASE 1 — FULL SYSTEM DISCOVERY
+Scan:
+all frontend routes
+all backend endpoints
+API connections
+auth system
+onboarding flow
+recommendation engines
+global state
+Build complete system map.
+
+🔥 PHASE 2 — REAL USER SIMULATION (CRITICAL)
+Simulate REAL USERS:
+User Set:
+100 users
+different languages (telugu, tamil, hindi, english)
+different eras
+all 3 modes
+Simulate behavior:
+login
+onboarding
+slider movement
+selecting movies
+rating movies
+adding to watchlist
+navigating pages
+
+🔥 PHASE 3 — END-TO-END FLOW VALIDATION
+Test FULL flows:
+Flow A:Landing → Register → Login → Language → Era → Mode → Home
+Flow B:Login → Mood Mode → Recommendations → Watchlist → Insights
+Flow C:Login → Manual Mode → Select 3 movies → Recommendations
+Ensure:
+no broken navigation
+no blank screens
+correct state flow
+
+🔥 PHASE 4 — RECOMMENDATION ACCURACY TEST
+For EACH request:
+Validate:
+language EXACT match
+era EXACT match
+genre alignment strong
+mood alignment correct
+no random irrelevant movies
+If mismatch:
+FIX engine logic immediately
+
+🔥 PHASE 5 — MODE ISOLATION TEST
+Ensure:
+mood mode uses ONLY sliders
+questionnaire uses ONLY answers
+manual uses ONLY selected movies
+If mixing detected:
+FIX immediately
+
+🔥 PHASE 6 — UI VALIDATION (STRICT)
+Check:
+navbar visible on all pages
+active route highlight correct
+hero layout aligned properly
+poster images NOT stretched
+cards consistent size
+spacing uniform
+no overflow
+no text touching edges
+
+🔥 PHASE 7 — PERFORMANCE TEST
+Simulate:
+rapid slider movement
+multiple API calls
+page navigation stress
+Ensure:
+debounce working
+no lag
+no UI freeze
+fast response
+
+🔥 PHASE 8 — ERROR RESILIENCE
+Simulate failures:
+backend down
+slow API
+empty dataset
+invalid inputs
+System must:
+never crash
+show fallback
+recover automatically
+
+🔥 PHASE 9 — SECURITY TEST
+Check:
+protected routes
+token validation
+logout clears session
+no unauthorized access
+
+🔥 PHASE 10 — DATA CONSISTENCY
+Ensure:
+frontend state = backend state
+no mismatch
+no stale data
+
+🔥 PHASE 11 — AUTO FIX LOOP
+For EVERY issue:
+detect
+find root cause
+fix code
+retest immediately
+Repeat until:
+ZERO ERRORS
+
+🔥 PHASE 12 — FINAL PRODUCT VALIDATION
+System must pass:
+perfect language filtering
+perfect era filtering
+accurate recommendations
+smooth UI
+stable performance
+no crashes
+no flicker
+no broken flows
+
+🔥 FINAL OUTPUT
+Return:
+System Status: PASS / FAIL
+Bugs Found (detailed)
+Bugs Fixed
+Remaining Issues
+Performance Rating (0–100)
+Recommendation Accuracy Rating (0–100)
+UX Quality Rating (0–100)
+Final Confidence Score
+
+🔥 RULE
+Do NOT stop at testing.
+You MUST:
+fix everything
+re-test everything
+ensure production readiness
+
+🔥 FINAL GOAL
+CineMind AI must behave like:
+a real deployed product
+stable under stress
+intelligent in recommendations
+flawless in user experience
+
+Continue until system is PERFECT.
