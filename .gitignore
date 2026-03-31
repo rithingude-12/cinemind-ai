@@ -78,3 +78,7 @@ coverage/
 # Temporary files
 *.tmp
 *.temp
+
+# Nested git repos (remove these)
+frontend/.git/
+backend/venv/
